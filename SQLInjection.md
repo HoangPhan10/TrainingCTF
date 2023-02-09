@@ -6,8 +6,8 @@
 + Do dữ liệu đầu vào từ người dùng không được kiểm tra kỹ lưỡng
 + Sử dụng các câu lệnh SQL động,thao tác nối dữ liệu người dùng với mã lệnh SQL gốc
 ### 3.Các dạng tấn công SQL Injection:
-#### 1.Classic SQL Injection: 
-##### Kiểu tấn công chèn mã độc trực tiếp vào câu lệnh SQL
+#### 1.Retrieving hidden data: 
+##### Có thể sửa câu truy vấn để trả về kết quả bổ sung
 Ví dụ : input đầu vào là @query = 'john'
 Ở đây câu truy vấn sẽ SELECT đến bảng users để lấy dữ liệu có username = 'john'
 ```Mysql
@@ -18,7 +18,7 @@ Nhưng ở đây chúng ta không biết trong bảng users có những username
 SELECT * FROM users WHERE username = 'john' or 1 = 1 -- ;
 ```
 Kết quả trả về sẽ là tất cả dữ liệu của bảng users
-#### 2.UNION-based SQL Injection: 
+#### 2.Retrieving data from other database tables: 
 ##### Kiểu tấn công này liên quan đến sử dụng UNION để kết hợp 2 hay nhiều câu lệnh SELECT.
 Để câu truy vấn UNION hoạt động thì phải đáp ứng được 2 yêu cầu:
 
@@ -52,7 +52,7 @@ Sau khi xác định được kiểu dữ liệu thì bây giờ mình cần tru
 SELECT name,type FROM category WHERE id = '123' UNION SELECT username,password FROM users--;
 ```
 #### 3.Examining the database:
-##### Kiểu tấn công này sẽ lấy được phiên bản,các bảng trong cơ sở dữ liệu
+##### Kiểu tấn công này sẽ lấy được phiên bản và cấu trúc cơ sở dữ liệu
 Truy vấn đến `information_schema.tables` để liệt kê các bảng trong cơ sở dữ liệu
 ```MySQL
 SELECT * FROM information_schema.tables
@@ -103,11 +103,3 @@ SELECT * FROM users WHERE username='admin'
 AND (select SUBSTRING(password,$a$,1) from users where username = 'admin')='$b$';
 ```
 Chạy xong sẽ tìm được password!
-
-
-
-
-
-
-
-
