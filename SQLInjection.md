@@ -66,7 +66,7 @@ Cuối cùng ta có thể truy vẫn đến từng giá trị của bảng
 SELECT user_abcd,pasword_efgh FROM users
 ```
 Mình thấy hay kết hợp với câu truy vấn `UNION`
-#### 4.Bind SQL Injection:
+#### 4.Blind SQL Injection:
 ##### Kiểu tấn công này sẽ không trả về kết quả của câu truy vấn đưa vào
 Ví dụ:
 ```MySQL
@@ -103,3 +103,8 @@ SELECT * FROM users WHERE username='admin'
 AND (select SUBSTRING(password,$a$,1) from users where username = 'admin')='$b$';
 ```
 Chạy xong sẽ tìm được password!
+### 4.Cách phòng chống SQL Injection:
++ **Lọc dữ liệu từ người dùng:** Ta sử dụng filter để lọc các ký tự đặc biệt(;') hoặc các từ khóa(UNION,SELECT)
++ **Không hiện thị exception,message lỗi:** Hacker có thể dự vào message lỗi để tìm ra cấu trúc dữ liệu
++ **Mã hóa dữ liệu trong database   :** Điều này làm cho hacker tìm được,những khó để sử dụng
+
