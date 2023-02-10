@@ -5,7 +5,12 @@
 ### 2.Nguyên nhân chính của lỗ hổng SQL Injection là gì?
 + Do dữ liệu đầu vào từ người dùng không được kiểm tra kỹ lưỡng
 + Sử dụng các câu lệnh SQL động,thao tác nối dữ liệu người dùng với mã lệnh SQL gốc
-### 3.Các dạng tấn công SQL Injection:
+### 3.Hậu quả của SQL Injection
++ Làm lộ dữ liệu của database
++ Xóa đi dữ liệu nhạy cảm quan trọng của hệ thống
++ Thay đổi dữ liệu nhạy cảm của hệ thống
++ Có thể kiểm soát máy chủ cơ sở dữ liệu và thực thi lệnh theo ý muốn
+### 4.Các dạng tấn công SQL Injection:
 #### 1.Retrieving hidden data: 
 ##### Có thể sửa câu truy vấn để trả về kết quả bổ sung
 Ví dụ : input đầu vào là @query = 'john'
@@ -103,8 +108,7 @@ SELECT * FROM users WHERE username='admin'
 AND (select SUBSTRING(password,$a$,1) from users where username = 'admin')='$b$';
 ```
 Chạy xong sẽ tìm được password!
-### 4.Cách phòng chống SQL Injection:
+### 5.Cách phòng chống SQL Injection:
 + **Lọc dữ liệu từ người dùng:** Ta sử dụng filter để lọc các ký tự đặc biệt(;') hoặc các từ khóa(UNION,SELECT)
 + **Không hiện thị exception,message lỗi:** Hacker có thể dự vào message lỗi để tìm ra cấu trúc dữ liệu
 + **Mã hóa dữ liệu trong database   :** Điều này làm cho hacker tìm được,những khó để sử dụng
-
