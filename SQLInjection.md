@@ -73,6 +73,7 @@ SELECT user_abcd,pasword_efgh FROM users
 Mình thấy hay kết hợp với câu truy vấn `UNION`
 #### 4.Blind SQL Injection:
 ##### Kiểu tấn công này sẽ không trả về kết quả của câu truy vấn đưa vào
+###### a. Response trả về giữa câu query Boolean là khác nhau
 Ví dụ:
 ```MySQL
 SELECT * FROM users WHERE username=@query;
@@ -108,7 +109,58 @@ SELECT * FROM users WHERE username='admin'
 AND (select SUBSTRING(password,$a$,1) from users where username = 'admin')='$b$';
 ```
 Chạy xong sẽ tìm được password!
+###### b.Error based: Khác với dạng trên,thì ở dạng này thì response trả về giữa các câu query Boolean không khác nhau.Nhưng mà nó trả về các exception,message lỗi từ câu lệnh SQL:
+**MYSQL**
+Ví dụ:
+```MySQL
+select * from users where username = 'admin' and (select case when (1=1) then 1/0 else 's' end)='s';
+-- > điều kiện 1 = 1 đúng thì câu này sẽ thực hiện 1/0 sẽ gây ra lỗi chia cho số 0
+select * from users where username = 'admin' and (select case when (1=2) then 1/0 else 's' end)='s';
+-- > điều kện 1 = 2 là sai thì câu lệnh sau AND sẽ trả về true    
+```
+Sau đó chúng ta có thể truy vết dữ liệu như ở dạng a ở trên.
+##### c.Time-based: gửi truy vấn đến database làm cho database đợi(vài giây) trước khi có thể hoạt động:
+Cách chạy thời gian trễ cho từng database
+![img](https://scontent.xx.fbcdn.net/v/t1.15752-9/329032973_3491653274396858_6283571348762962612_n.png?_nc_cat=108&ccb=1-7&_nc_sid=aee45a&_nc_ohc=wieAw4ChtbAAX9UsWaM&_nc_oc=AQn6HIN5BxM2LCpAmznCGP-rqAabZSj_Xk0CaO3z-li9cLk7Xb9VsX2ZfHsOzINxQhxOPxAYmblvAKZxxq8bsDm1&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.xx&oh=03_AdTfBlETBpzedGQy5Si28ieZgiFidTfMM-f5PekpChKLiw&oe=640E4E89)
+Ví dụ :
+**MYSQL**
+```MySQL
+SELECT * FROM app.user where id =1 and case when(true) then sleep(5) else sleep(0) end;
+``` 
+![img](https://scontent.xx.fbcdn.net/v/t1.15752-9/330429557_698290495104032_2516872502378872048_n.png?_nc_cat=103&ccb=1-7&_nc_sid=aee45a&_nc_ohc=0QVs8XkUDysAX9HLuw9&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.xx&oh=03_AdT1H3chendAiKeLqahKYPjrPL1Dy68fld0sn2aObxvXiw&oe=640E99FE)
+Dạng này kết hợp với các câu truy vấn Boolean để truy vết dữ liệu
+#### 5.Out of band SQL Injection:
++ Kẻ tấn công sẽ tạo ra câu lệnh SQL,lệnh có thể kích hoạt hệ thống cơ sở dữ liệu để tạo kết nối với máy chủ bên ngoài mà kẻ tấn công kiểm soát
+
 ### 5.Cách phòng chống SQL Injection:
 + **Lọc dữ liệu từ người dùng:** Ta sử dụng filter để lọc các ký tự đặc biệt(;') hoặc các từ khóa(UNION,SELECT)
 + **Không hiện thị exception,message lỗi:** Hacker có thể dự vào message lỗi để tìm ra cấu trúc dữ liệu
-+ **Mã hóa dữ liệu trong database   :** Điều này làm cho hacker tìm được,những khó để sử dụng
++ **Mã hóa dữ liệu trong database:** Điều này làm cho hacker tìm được,những khó để sử dụng
++ **Tham số hóa truy vấn:** Cấu trúc của câu truy vấn và truyền các tham số giá trị được tách biệt
+Ví dụ:
+**MYSQL**
+Truy vấn cách thông thường:
+```MySQL
+    SELECT * FROM Users WHERE Username = ' + username + ' AND Password = ' + password + ';
+    -- > Ở đây người hacker có thể nhập username = admin' or 1=1; -- để lấy hết thông tin của người dùng
+```
+Nếu sử dụng tham số hóa:
+```MySQl
+    sqlQuery = SELECT * FROM Users WHERE Username =? AND Password =?';
+    parameters.add("Username", username)
+    parameters.add("Password", password)
+```
+Ở đây người hacker có thể nhập username = admin" or 1=1; -- và password = 123456
+Khi truy vấn nó sẽ hiểu là sẽ truy vấn đến Username có value là admin" or 1=1; -- và Password = 123456
+
+
+
+
+
+
+
+
+
+
+
+
